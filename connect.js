@@ -128,8 +128,6 @@ client.on('connect', function (connection) {
       }
       if (type === 'auth_ok') {
 
-
-
         (async () => {
           let payload = {}
           let msg = {}
@@ -180,6 +178,7 @@ client.on('connect', function (connection) {
             "service_data": {}
           });
 
+          // 訂閱裝置狀態改變事件
           subscribeEvent({
             "type": "subscribe_events",
             "event_type": "state_changed"
