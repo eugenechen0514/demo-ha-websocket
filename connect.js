@@ -66,8 +66,13 @@ client.on('connect', function (connection) {
     }
   }
 
-  function subscribeEvent(id) {
-
+  function subscribeEvent(payload, fn) {
+    const wrappedFn = (payload) => {
+      if (payload.type === 'event') {
+        fn(payload);
+      }
+    }
+    sendMessageCallback(payload, wrappedFn);
   }
 
   function sendMessage(payload, options = {}) {
@@ -156,7 +161,8 @@ client.on('connect', function (connection) {
           });
           // console.log(payload);
 
-          msg = {
+          // 手動 “觸發執行 automation”
+          await sendMessage({
             "type": "call_service",
             "domain": "automation",
             "service": "trigger",
@@ -164,13 +170,22 @@ client.on('connect', function (connection) {
               "entity_id": "automation.test3_2",
               "skip_condition": true
             }
-          }
-          msg = {
+          });
+
+          // 手動 “觸發執行 script”
+          await sendMessage({
             "type": "call_service",
             "domain": "script",
             "service": "confirmable_notification_1",
             "service_data": {}
-          }
+          });
+
+          subscribeEvent({
+            "type": "subscribe_events",
+            "event_type": "state_changed"
+          }, (payload) => {
+            console.log('=> state_changed', payload);
+          })
 
           //===============
           // blueprints
