@@ -114,6 +114,7 @@ client.on('connect', function (connection) {
       const { type, id, ...others } = payload;
       debug("Received: \n" + JSON.stringify(payload, null, 2).slice(0, 255));
 
+      // invoke callback for an id
       if (id) {
         const fn = callbackCommandMap.get(id);
         if (fn) (
@@ -123,9 +124,12 @@ client.on('connect', function (connection) {
         )
       }
 
+      // auth flow
       if (type === 'auth_required') {
         sendAuth()
       }
+
+      // auth success
       if (type === 'auth_ok') {
 
         (async () => {
